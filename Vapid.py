@@ -7,7 +7,7 @@ import os
 # Loading an executable
 filepath = sys.argv[1]
 targetVirtualAddressParam = sys.argv[2]
-print(type(targetVirtualAddressParam))
+#print(type(targetVirtualAddressParam))
 
 # if targetVirtualAddressParam.startswith("0x"):
 #     targetVirtualAddressParam = int(targetVirtualAddressParam,16)
@@ -62,7 +62,7 @@ def ConvertTargetVirtualAddressToTargetPointer(filename, targetVirtualAddressPar
     print(pe.sections[5])"""
 
 
-    print("section count: ", pe.sections.__len__())
+    #print("section count: ", pe.sections.__len__())
     for section in pe.sections:
         found = False
         #print(type(section))
@@ -84,12 +84,12 @@ def ConvertTargetVirtualAddressToTargetPointer(filename, targetVirtualAddressPar
             found = True
             break
     if not found:
-        print(str(targetVirtualAddress) + "  -> " + "??")
+        print(str(targetVirtualAddress) + " -> " + "??")
     else:
         offset = int(targetVirtualAddress,16) - resultSection.VirtualAddress - pe.OPTIONAL_HEADER.ImageBase
-        print(type(offset))
+        #print(type(offset))
         targetFilePointer = resultSection.PointerToRawData + offset
-        print(str(targetVirtualAddress) + "  -> " + str(hex(targetFilePointer)))
+        print(str(targetVirtualAddress) + " -> " + str(hex(targetFilePointer)))
 
 
 if __name__ == '__main__':
