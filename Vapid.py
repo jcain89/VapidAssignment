@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import pefile
 import sys
 import os
