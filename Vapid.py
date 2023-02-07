@@ -39,7 +39,7 @@ def CheckForValidInput(targetVirtualAddressParam_) -> str():
         return targetVirtualAddressParam_
     elif targetVirtualAddressParam_.isdigit():
         targetVirtualAddressParam_ = hex(int(targetVirtualAddressParam_))
-        print(f"{targetVirtualAddressParam_=}")
+        #print(f"{targetVirtualAddressParam_=}")
         return targetVirtualAddressParam_
     else:
         raise ValueError("This value is not a valid hexidecimal number, terminaing program")
@@ -65,7 +65,7 @@ def ConvertTargetVirtualAddressToTargetPointer(filename, targetVirtualAddressPar
     print("section count: ", pe.sections.__len__())
     for section in pe.sections:
         found = False
-        print(type(section))
+        #print(type(section))
         #values in next line are being treated as a string fix this
         #a="0xa"+"0xb1"
         #print(a)
@@ -74,13 +74,13 @@ def ConvertTargetVirtualAddressToTargetPointer(filename, targetVirtualAddressPar
         # print(targetVirtualAddress)
         bottom = section.VirtualAddress + pe.OPTIONAL_HEADER.ImageBase
         top = bottom + section.Misc_VirtualSize
-        print(f"{top=}")
-        print(f"{bottom=}")
-        print(type(top))
-        print(type(bottom))
+        #print(f"{top=}")
+        #print(f"{bottom=}")
+        #print(type(top))
+        #print(type(bottom))
         if top > int(targetVirtualAddress,16) and bottom < int(targetVirtualAddress,16):
             resultSection = section
-            print("BREAKING")
+            #print("BREAKING")
             found = True
             break
     if not found:
@@ -101,11 +101,11 @@ if __name__ == '__main__':
     #     targetVirtualAddressParam = hex(int(targetVirtualAddressParam))
     #     print(targetVirtualAddressParam, ": HEXED")
     #     targetVirtualAddressParam.removeprefix("0x")
-    print(f"{targetVirtualAddressParam=}")
-    print(type(targetVirtualAddressParam))
+    #print(f"{targetVirtualAddressParam=}")
+    #print(type(targetVirtualAddressParam))
     CheckForValidFilePath(filepath)
     targetVirtualAddressParam = CheckForValidInput(targetVirtualAddressParam)
-    print("MAIN TVAP:",targetVirtualAddressParam)
+    #print("MAIN TVAP:",targetVirtualAddressParam)
     targetVirtualAddress = targetVirtualAddressParam
     pe = pefile.PE(str(filepath))
     ConvertTargetVirtualAddressToTargetPointer(filepath, targetVirtualAddress)
