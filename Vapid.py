@@ -84,7 +84,7 @@ def ConvertTargetVirtualAddressToTargetPointer(filename, targetVirtualAddressPar
             found = True
             break
     if not found:
-        print(str(targetVirtualAddress) + " -> " + "??")
+        print((str(targetVirtualAddress)).lower() + " -> " + "??")
     else:
         offset = int(targetVirtualAddress,16) - resultSection.VirtualAddress - pe.OPTIONAL_HEADER.ImageBase
         #print(type(offset))
