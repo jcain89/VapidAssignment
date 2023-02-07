@@ -2,6 +2,6 @@
 apt-get update
 apt-get install python3 -y
 apt-get install python3-pip
-chmod +x vapid.py  
+chmod +x Vapid.py  
 pip3 install pefile
-dos2unix vapid
+dos2unix Vapid
