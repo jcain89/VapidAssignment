@@ -3,24 +3,11 @@ import pefile
 import sys
 import os
 
-#RUN pip3 install pefile before compilation
+# RUN pip3 install pefile before compilation
 # Loading an executable
-filepath = sys.argv[1]
-targetVirtualAddressParam = sys.argv[2]
-#print(type(targetVirtualAddressParam))
-
-# if targetVirtualAddressParam.startswith("0x"):
-#     targetVirtualAddressParam = int(targetVirtualAddressParam,16)
-#     print(targetVirtualAddressParam)
-# # if targetVirtualAddressParam.isdigit():
-# #     print("ISDIGTI")
-# #     targetVirtualAddressParam = hex(int(targetVirtualAddressParam))
-# #     print(targetVirtualAddressParam, ": HEXED")
-# #     targetVirtualAddressParam.removeprefix("0x")
-# print(f"{targetVirtualAddressParam=}")
-# print(type(targetVirtualAddressParam))
 
 
+# Function to check if file path is valid, exits if file not valid
 def CheckForValidFilePath(filepath):
     check = os.path.exists(filepath)
     if not check:
@@ -28,84 +15,57 @@ def CheckForValidFilePath(filepath):
         exit(1)
     return
 
-
-def CheckForValidInput(targetVirtualAddressParam_) -> str():
-    if targetVirtualAddressParam_.startswith("0x"):
+# function to check if targetVirtualAdress parameter is valid, if not exits with error, if it
+# is then return the value as hex so it can be used in conversion function
+def CheckForValidInput(targetVirtualAddressParamater) -> str():
+    if targetVirtualAddressParamater.startswith("0x"):
         try:
-            int(targetVirtualAddressParam, 16)
+            int(targetVirtualAddressParamater, 16)
         except ValueError:
             print("This value is not a valid hexadecimal number, terminating program!")
             exit(1)
-        return targetVirtualAddressParam_
-    elif targetVirtualAddressParam_.isdigit():
-        targetVirtualAddressParam_ = hex(int(targetVirtualAddressParam_))
-        #print(f"{targetVirtualAddressParam_=}")
-        return targetVirtualAddressParam_
+        return targetVirtualAddressParamater
+    elif targetVirtualAddressParamater.isdigit():
+        targetVirtualAddressParamater = hex(int(targetVirtualAddressParamater))
+        return targetVirtualAddressParamater
     else:
         raise ValueError("This value is not a valid hexidecimal number, terminaing program")
         exit(1)
-    # if(type(targetVirtualAddressParam)!=int()):
-    #     try:
-    #         int(targetVirtualAddressParam, 16)
-    #         return
-    #     except ValueError:
-    #         print("This value is not a valid hexadecimal number, terminating program!")
-    #         exit(1)
 
 
-def ConvertTargetVirtualAddressToTargetPointer(filename, targetVirtualAddressParam):
-    """print(pe.sections[0])
-    print(pe.sections[1])
-    print(pe.sections[2])
-    print(pe.sections[3])
-    print(pe.sections[4])
-    print(pe.sections[5])"""
-
-
-    #print("section count: ", pe.sections.__len__())
+# function to convert target virtual adress to target pointer takes in TVA
+# loops through section if target is found set an offset and add that to
+# pointerToRawData from that result section to calc targetFilePointer
+def ConvertTargetVirtualAddressToTargetPointer(tvaInput):
     for section in pe.sections:
         found = False
-        #print(type(section))
-        #values in next line are being treated as a string fix this
-        #a="0xa"+"0xb1"
-        #print(a)
-        # print("Virtual Address: ",section.VirtualAddress)
-        # print("Virtual Size: ",hex(section.Misc_VirtualSize))
-        # print(targetVirtualAddress)
         bottom = section.VirtualAddress + pe.OPTIONAL_HEADER.ImageBase
         top = bottom + section.Misc_VirtualSize
-        #print(f"{top=}")
-        #print(f"{bottom=}")
-        #print(type(top))
-        #print(type(bottom))
-        if top > int(targetVirtualAddress,16) and bottom < int(targetVirtualAddress,16):
+        if top > int(tvaInput, 16) > bottom:
             resultSection = section
-            #print("BREAKING")
             found = True
             break
-    if not found:
-        print((str(targetVirtualAddress)).lower() + " -> " + "??")
-    else:
-        offset = int(targetVirtualAddress,16) - resultSection.VirtualAddress - pe.OPTIONAL_HEADER.ImageBase
-        #print(type(offset))
+    if not found:   # if flag not set returns "??"
+        print((str(tvaInput)).lower() + " -> " + "??")
+    else:   # if flag is set returns the target file pointer
+        offset = int(tvaInput,16) - resultSection.VirtualAddress - pe.OPTIONAL_HEADER.ImageBase
         targetFilePointer = resultSection.PointerToRawData + offset
-        print(str(targetVirtualAddress) + " -> " + str(hex(targetFilePointer)))
+        print(str(tvaInput) + " -> " + str(hex(targetFilePointer)))
 
 
 if __name__ == '__main__':
+    # The following two lines are the two arguments which will be fed through the CLI
     filepath = sys.argv[1]
     targetVirtualAddressParam = sys.argv[2]
 
-    # if targetVirtualAddressParam.isdigit():
-    #     print("ISDIGTI")
-    #     targetVirtualAddressParam = hex(int(targetVirtualAddressParam))
-    #     print(targetVirtualAddressParam, ": HEXED")
-    #     targetVirtualAddressParam.removeprefix("0x")
-    #print(f"{targetVirtualAddressParam=}")
-    #print(type(targetVirtualAddressParam))
     CheckForValidFilePath(filepath)
-    targetVirtualAddressParam = CheckForValidInput(targetVirtualAddressParam)
-    #print("MAIN TVAP:",targetVirtualAddressParam)
-    targetVirtualAddress = targetVirtualAddressParam
+    # Line above will call function to validate filepath input
+
+    targetVirtualAddress = CheckForValidInput(targetVirtualAddressParam)
+    # Line above will call function which returns hex TVA parameter used in conversion function
+
     pe = pefile.PE(str(filepath))
-    ConvertTargetVirtualAddressToTargetPointer(filepath, targetVirtualAddress)
+    # Line above creates pe variable to use for portable executable file fields
+
+    ConvertTargetVirtualAddressToTargetPointer(targetVirtualAddress)
+    # Line above calls conversion function which will print the TargetFilePointer
